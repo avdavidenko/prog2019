@@ -157,6 +157,4 @@ class EnglishSentence(Sentence):
                 pos_output.append(word[0])
         return pos_output
 
-help(Sentence)
-help(RussianSentence)
-help(EnglishSentence)
+    #Полиморфизм в том, что функции для лемматизации и выдачи слов по тегам по-разному работают для разных классов.
