@@ -1,8 +1,8 @@
-import pandas as pd
 import numpy as np
+import pandas as pd
 from sklearn import datasets
 from sklearn.model_selection import train_test_split
-
+from sklearn.metrics import mean_absolute_error
 
 SEED = 17
 np.random.seed(SEED)
@@ -21,6 +21,7 @@ class SimpleLinearRegression:
         """
         estimate target variable "y" based on features X 
         """
+        #y_pred = np.array([(self._w * i + self._intercept) for i in X])
         y_pred = self._w * X + self._intercept
         assert y_pred.shape[0] == X.shape[0]
         return y_pred
@@ -39,8 +40,9 @@ class SimpleLinearRegression:
         X - features
         y - true values of target variable
         """
-        grad_w = -2/len(X) * sum((y[i] - self._intercept*X[i] - self._w) for i in range(1, len(X)))
-        grad_intercept = -2/len(X) * sum(X[i]*(y[i] - self._intercept*X[i] - self._w) for i in range(1, len(X)))
+        N = len(X)
+        grad_intercept = -2/N * sum((y[i] - self._w * X[i] - self._intercept) for i in range(0, N))
+        grad_w = -2/N * sum(X[i]*(y[i] - self._w * X[i] - self._intercept) for i in range(0, N))
         return grad_w, grad_intercept
         
     def fit(self, X, y):
@@ -63,15 +65,12 @@ class SimpleLinearRegression:
             self._w = self._w - self.step * grad_w
             self._intercept = self._intercept - self.step * grad_intercept
             
-            # compute gradient norm
-            grad_norm = np.sqrt(grad_intercept**2 + grad_w**2)
+            # compute gradient norm            
+            grad_norm = np.sqrt(grad_intercept ** 2 + grad_w ** 2)
             
             # people like to watch how the error is reducing during iterations 
             if self.verbose:
                 mse_score = self.score(X, y)
-                print ('iter ', iter)
-                print ('mse_score ', mse_score)
-                print ('grad_norm ', grad_norm)
                 print('iteration %d, MSE = %f, ||grad|| = %f' % (iter, mse_score, grad_norm))
                 
             # compare gradient norm with threshold
@@ -94,10 +93,11 @@ print(boston_data.keys())
 
 df = pd.DataFrame(boston_data['data'], columns=boston_data['feature_names'])
 df['target'] = boston_data['target']
-print(df.head())
+df.head()
 
 print(boston_data['DESCR'])
 
+# разбили датасет в соотношении 60:40
 df_train, df_test = train_test_split(df, test_size=0.4, random_state=SEED, shuffle=True)
 
 # обучите модель на df_train c verbose=True
@@ -106,16 +106,22 @@ df_train, df_test = train_test_split(df, test_size=0.4, random_state=SEED, shuff
 
 model = SimpleLinearRegression(verbose=True)
 
-X_train = df_train['CRIM']
-y_train = df_train['target']
+X_train = np.array(df_train['CRIM'])
+y_train = np.array(df_train['target'])
 
 model.fit(X_train, y_train)
-
 y_train_pred = model.predict(X_train)
+
 mse_train_score = mse_score(y_train, y_train_pred)
+
 print('MSE on train:', mse_train_score)
 
-##mse_test_score = # YOUR CODE HERE
-##
-##print('MSE on test:', mse_test_score)
+# # посчитали качество обученной модели на df_test
 
+X_test = np.array(df_test["CRIM"])
+y_test = np.array(df_test["target"])
+
+y_test_predict = model.predict(X_test)
+mse_test_score = mse_score(y_test, y_test_predict)
+
+print('MSE on test:', mse_test_score)
