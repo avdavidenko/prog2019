@@ -40,8 +40,8 @@ class SimpleLinearRegression:
         y - true values of target variable
         """
         N = len(X)
-        grad_intercept = -2/N * sum((y[i] - self._w * X[i] - self._intercept) for i in range(0, N))
-        grad_w = -2/N * sum(X[i]*(y[i] - self._w * X[i] - self._intercept) for i in range(0, N))
+        grad_intercept = -2/N * sum((y[i] - self._w * X[i] - self._intercept) for i in range(1, N))
+        grad_w = -2/N * sum(X[i]*(y[i] - self._w * X[i] - self._intercept) for i in range(1, N))
         return grad_w, grad_intercept
         
     def fit(self, X, y):
