@@ -21,7 +21,6 @@ class SimpleLinearRegression:
         """
         estimate target variable "y" based on features X 
         """
-        #y_pred = np.array([(self._w * i + self._intercept) for i in X])
         y_pred = self._w * X + self._intercept
         assert y_pred.shape[0] == X.shape[0]
         return y_pred
